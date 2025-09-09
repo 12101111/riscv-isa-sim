@@ -5,6 +5,7 @@
 #include "decode.h"
 #include "trap.h"
 #include "abstract_device.h"
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -380,6 +381,13 @@ public:
   void check_if_lpad_required();
 
   reg_t select_an_interrupt_with_default_priority(reg_t enabled_interrupts) const;
+  void set_hook_range(uint64_t low, uint64_t high) {
+    trace_low = low;
+    trace_high = high;
+  }
+  bool is_hooked(reg_t pc) {
+    return trace_low <= pc && pc <= trace_high;
+  }
 
 private:
   const isa_parser_t isa;
@@ -439,6 +447,9 @@ private:
 
   // Track repeated executions for processor_t::disasm()
   uint64_t last_pc, last_bits, executions;
+
+  // used in tracer
+  uint64_t trace_low, trace_high;
 public:
   entropy_source es; // Crypto ISE Entropy source.
 
@@ -448,6 +459,8 @@ public:
 
   vectorUnit_t VU;
   triggers::module_t TM;
+
+  uint64_t branch_count, condition_count, load_count, store_count, other_count;
 };
 
 #endif
