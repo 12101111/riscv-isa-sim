@@ -180,7 +180,7 @@ void htif_t::load_symbols(std::map<std::string, uint64_t>& symbols)
     tohost_addr = symbols["tohost"];
     fromhost_addr = symbols["fromhost"];
   } else {
-    fprintf(stderr, "warning: tohost and fromhost symbols not in ELF; can't communicate with target\n");
+    // fprintf(stderr, "warning: tohost and fromhost symbols not in ELF; can't communicate with target\n");
   }
 
   for (auto i : symbols) {
