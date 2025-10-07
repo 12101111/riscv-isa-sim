@@ -368,6 +368,7 @@ public:
     trace_high = high;
   }
   bool is_hooked(reg_t pc) {
+    pc = pc & 0xffffffff;
     return trace_low <= pc && pc <= trace_high;
   }
 
@@ -425,8 +426,6 @@ private:
   // Track repeated executions for processor_t::disasm()
   uint64_t last_pc, last_bits, executions;
 
-  // used in tracer
-  uint64_t trace_low, trace_high;
 public:
   entropy_source es; // Crypto ISE Entropy source.
 
@@ -437,7 +436,10 @@ public:
   vectorUnit_t VU;
   triggers::module_t TM;
 
+  // used in tracer
+  uint64_t trace_low, trace_high;
   uint64_t branch_count, condition_count, load_count, store_count, other_count;
+  uint64_t nothooked;
 };
 
 #endif

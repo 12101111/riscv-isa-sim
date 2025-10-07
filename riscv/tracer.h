@@ -31,6 +31,9 @@ static inline void trace_opcode(processor_t UNUSED *p, insn_bits_t UNUSED opc,
       break;
     case MATCH_C_LW:
     case MATCH_C_LWSP:
+    case MATCH_C_LBU:
+    case MATCH_C_LHU:
+    case MATCH_C_LH:
 #if xlen == 32
     case MATCH_C_FLW:
     case MATCH_C_FLWSP:
@@ -40,6 +43,9 @@ static inline void trace_opcode(processor_t UNUSED *p, insn_bits_t UNUSED opc,
 #endif
     case MATCH_C_FLD:
     case MATCH_C_FLDSP:
+    case MATCH_CM_POP:
+    case MATCH_CM_POPRET:
+    case MATCH_CM_POPRETZ:
     case MATCH_LB:
     case MATCH_LH:
     case MATCH_LBU:
@@ -54,6 +60,8 @@ static inline void trace_opcode(processor_t UNUSED *p, insn_bits_t UNUSED opc,
       break;
     case MATCH_C_SW:
     case MATCH_C_SWSP:
+    case MATCH_C_SB:
+    case MATCH_C_SH:
 #if xlen == 32
     case MATCH_C_FSW:
     case MATCH_C_FSWSP:
@@ -63,6 +71,7 @@ static inline void trace_opcode(processor_t UNUSED *p, insn_bits_t UNUSED opc,
 #endif
     case MATCH_C_FSD:
     case MATCH_C_FSDSP:
+    case MATCH_CM_PUSH:
     case MATCH_SB:
     case MATCH_SH:
     case MATCH_SW:
@@ -76,6 +85,8 @@ static inline void trace_opcode(processor_t UNUSED *p, insn_bits_t UNUSED opc,
       p->other_count++;
       break;
     }
+  } else if (p->trace_low != 0) {
+    p->nothooked++;
   }
 }
 
