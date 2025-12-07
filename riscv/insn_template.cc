@@ -9,7 +9,7 @@
   reg_t npc = sext_xlen(pc + insn_length(OPCODE))
 
 #define EPILOGUE \
-  trace_opcode(p, OPCODE, insn, pc); \
+  trace_opcode(p, OPCODE, insn, pc, xlen == 32); \
   return npc
 
 reg_t fast_rv32i_NAME(processor_t* p, insn_t insn, reg_t pc)
