@@ -426,7 +426,7 @@ void sim_t::idle()
   if (done())
     return;
 
-  if (debug || ctrlc_pressed)
+  if (debug)
     interactive();
   else {
     if (instruction_limit.has_value()) {
