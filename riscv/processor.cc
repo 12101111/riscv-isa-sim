@@ -36,11 +36,11 @@ processor_t::processor_t(const char* isa_str, const char* priv_str,
                          FILE* log_file, std::ostream& sout_)
 : debug(false), halt_request(HR_NONE), isa(isa_str, priv_str), cfg(cfg),
   sim(sim), id(id), xlen(isa.get_max_xlen()),
-  histogram_enabled(false), log_commits_enabled(false),
+  log_commits_enabled(false),
   log_file(log_file), sout_(sout_.rdbuf()), halt_on_reset(halt_on_reset),
   in_wfi(false), check_triggers_icount(false),
   impl_table(256, false), extension_enable_table(isa.get_extension_table()),
-  last_pc(1), executions(1), TM(cfg->trigger_count)
+  last_pc(1), executions(1), TM(cfg->trigger_count), histogram_enabled(false)
 {
   VU.p = this;
   TM.proc = this;

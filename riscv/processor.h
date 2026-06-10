@@ -18,6 +18,7 @@
 #include "triggers.h"
 #include "../fesvr/memif.h"
 #include "vector_unit.h"
+#include "event_tracer.h"
 
 #define FIRST_HPMCOUNTER 3
 #define N_HPMCOUNTERS 29
@@ -363,6 +364,7 @@ public:
   reg_t set_lpad_expected(reg_t pc);
 
   reg_t select_an_interrupt_with_default_priority(reg_t enabled_interrupts) const;
+
   void set_hook_range(uint64_t low, uint64_t high) {
     trace_low = low;
     trace_high = high;
@@ -370,6 +372,38 @@ public:
   bool is_hooked(reg_t pc) {
     pc = pc & 0xffffffff;
     return trace_low <= pc && pc <= trace_high;
+  }
+  void append_jump_event() {
+      reg_t pc = state.pc;
+      if (enable_log_branch_events && is_hooked(pc)) {
+          events.push_back(trace_event_t {
+              (uint32_t)pc, TE_JUMP
+          });
+      }
+  }
+  void append_branch_event() {
+      reg_t pc = state.pc;
+      if (enable_log_branch_events && is_hooked(pc)) {
+          events.push_back(trace_event_t {
+              (uint32_t) pc, TE_BRANCH
+          });
+      }
+  }
+  void append_read_event(reg_t addr, size_t size) {
+      reg_t pc = state.pc;
+      if (enable_log_mem_events && is_hooked(pc)) {
+          events.push_back(trace_event_t {
+              (uint32_t) pc, TE_READ, (uint32_t) addr, (uint8_t) size
+          });
+      }
+  }
+  void append_write_event(reg_t addr, size_t size) {
+      reg_t pc = state.pc;
+      if (enable_log_mem_events && is_hooked(pc)) {
+          events.push_back(trace_event_t {
+              (uint32_t) pc, TE_WRITE, (uint32_t) addr, (uint8_t) size
+          });
+      }
   }
 
 private:
@@ -384,7 +418,6 @@ private:
   uint32_t id;
   unsigned xlen;
   unsigned max_vaddr_bits;
-  bool histogram_enabled;
   bool log_commits_enabled;
   FILE *log_file;
   std::ostream sout_; // needed for socket command interface -s, also used for -d and -l, but not for --log
@@ -401,7 +434,6 @@ private:
   std::vector<opcode_map_entry_t> opcode_map[128];
   std::vector<insn_desc_t> instructions;
   std::vector<insn_desc_t> custom_instructions;
-  std::unordered_map<reg_t,uint64_t> pc_histogram;
 
   void take_pending_interrupt() { take_interrupt(state.mip->read() & state.mie->read()); }
   void take_interrupt(reg_t mask); // take first enabled interrupt in mask
@@ -437,9 +469,16 @@ public:
   triggers::module_t TM;
 
   // used in tracer
-  uint64_t trace_low, trace_high;
-  uint64_t branch_count, condition_count, load_count, store_count, other_count;
-  uint64_t nothooked;
+  bool histogram_enabled;
+  std::unordered_map<reg_t,uint64_t> pc_histogram;
+
+  uint64_t trace_low = 0, trace_high = 0;
+  uint64_t branch_count = 0, condition_count = 0, load_count = 0, store_count = 0, other_count = 0;
+  uint64_t nothooked = 0;
+  bool enable_count_events = false;
+  bool enable_log_mem_events = false;
+  bool enable_log_branch_events = false;
+  std::vector<trace_event_t> events;
 };
 
 #endif

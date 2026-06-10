@@ -31,6 +31,7 @@ riscv_install_hdrs = \
 	dtb_discovery.h \
 	disasm.h \
 	dts.h \
+	event_tracer.h \
 	encoding.h \
 	entropy_source.h \
 	extension.h \
