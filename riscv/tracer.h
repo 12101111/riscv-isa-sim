@@ -6,9 +6,10 @@
 #include "processor.h"
 #define is(func) ((insn.bits() & MASK_##func) == MATCH_##func)
 
+#if DECODE_MACRO_USAGE_LOGGED == 0
 static inline void trace_opcode(processor_t UNUSED *p, insn_bits_t UNUSED opc,
                                 insn_t UNUSED insn, reg_t UNUSED pc, bool xlen32) {
-  if (p->is_hooked(pc)) {
+  if (p->enable_count_events && p->is_hooked(pc)) {
     switch (opc) {
     case MATCH_C_JAL:
       if (xlen32 && is(C_JAL))
@@ -98,6 +99,42 @@ static inline void trace_opcode(processor_t UNUSED *p, insn_bits_t UNUSED opc,
     p->nothooked++;
   }
 }
+#else // DECODE_MACRO_USAGE_LOGGED == 1
+static inline void trace_opcode(processor_t UNUSED *p, insn_bits_t UNUSED opc,
+                                insn_t UNUSED insn, reg_t UNUSED pc, bool xlen32) {
+if (p->is_hooked(pc)) {
+  switch (opc) {
+  case MATCH_C_JAL:
+    if (xlen32 && is(C_JAL)) {
+        p->append_branch_event();
+    }
+    break;
+  case MATCH_C_J:
+  case MATCH_JAL:
+  case MATCH_JALR:
+    p->append_branch_event();
+    break;
+  case MATCH_C_JR:
+  case MATCH_C_JALR:
+    if (is(C_JR) || is(C_JALR)) {
+        p->append_branch_event();
+    }
+    break;
+  case MATCH_C_BEQZ:
+  case MATCH_C_BNEZ:
+  case MATCH_BEQ:
+  case MATCH_BNE:
+  case MATCH_BLT:
+  case MATCH_BGE:
+  case MATCH_BLTU:
+  case MATCH_BGEU:
+    p->append_branch_event();
+    break;
+  default:
+    break;
+  }
+}
+#endif
 
 #undef is
 #endif

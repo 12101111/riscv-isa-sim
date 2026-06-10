@@ -21,17 +21,17 @@ const reg_t PGSIZE = 1 << PGSHIFT;
 
 // observability hooks for load, store and fetch
 // intentionally empty not to cause runtime overhead
-// can be redefined if needed 
+// can be redefined if needed
 #ifndef MMU_OBSERVE_FETCH
 #define MMU_OBSERVE_FETCH(addr, insn, length)
 #endif
 
 #ifndef MMU_OBSERVE_LOAD
-#define MMU_OBSERVE_LOAD(addr, data, length)
+#define MMU_OBSERVE_LOAD(addr, data, length) if (proc->slow_path()) { proc->append_read_event(addr, length); }
 #endif
 
 #ifndef MMU_OBSERVE_STORE
-#define MMU_OBSERVE_STORE(addr, data, length)
+#define MMU_OBSERVE_STORE(addr, data, length) if (proc->slow_path()) { proc->append_write_event(addr, length); }
 #endif
 
 struct insn_fetch_t

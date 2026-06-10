@@ -29,6 +29,7 @@ riscv_install_hdrs = \
 	devices.h \
 	disasm.h \
 	dts.h \
+	event_tracer.h \
 	encoding.h \
 	entropy_source.h \
 	extension.h \
