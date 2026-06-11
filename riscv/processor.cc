@@ -85,7 +85,7 @@ processor_t::processor_t(const char* isa_str, const char* priv_str,
 
 processor_t::~processor_t()
 {
-  if (histogram_enabled)
+  if (histogram_enabled && print_histogram)
   {
     std::vector<std::pair<reg_t, uint64_t>> ordered_histo(pc_histogram.begin(), pc_histogram.end());
     std::sort(ordered_histo.begin(), ordered_histo.end(),

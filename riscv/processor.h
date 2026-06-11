@@ -393,7 +393,7 @@ public:
   }
   void append_jump_event() {
       reg_t pc = state.pc;
-      if (enable_log_branch_events && is_hooked(pc)) {
+      if (enable_log_branch_events) {
           events.push_back(trace_event_t {
               (uint32_t)pc, TE_JUMP
           });
@@ -401,7 +401,7 @@ public:
   }
   void append_branch_event() {
       reg_t pc = state.pc;
-      if (enable_log_branch_events && is_hooked(pc)) {
+      if (enable_log_branch_events) {
           events.push_back(trace_event_t {
               (uint32_t) pc, TE_BRANCH
           });
@@ -493,6 +493,7 @@ public:
 
   // used in tracer
   bool histogram_enabled;
+  bool print_histogram = true;
   std::unordered_map<reg_t,uint64_t> pc_histogram;
 
   uint64_t trace_low = 0, trace_high = 0;

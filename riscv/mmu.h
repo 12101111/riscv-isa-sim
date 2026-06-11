@@ -27,11 +27,11 @@ const reg_t PGSIZE = 1 << PGSHIFT;
 #endif
 
 #ifndef MMU_OBSERVE_LOAD
-#define MMU_OBSERVE_LOAD(addr, data, length) if (proc->slow_path()) { proc->append_read_event(addr, length); }
+#define MMU_OBSERVE_LOAD(addr, data, length) do { if (proc) proc->append_read_event(addr, length); } while(0)
 #endif
 
 #ifndef MMU_OBSERVE_STORE
-#define MMU_OBSERVE_STORE(addr, data, length) if (proc->slow_path()) { proc->append_write_event(addr, length); }
+#define MMU_OBSERVE_STORE(addr, data, length) do { if (proc) proc->append_write_event(addr, length); } while(0)
 #endif
 
 struct insn_fetch_t
